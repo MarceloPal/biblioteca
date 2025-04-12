@@ -1,14 +1,19 @@
 package com.example.biblioteca.repository;
-import com.example.biblioteca.model.Libro;
-import jakarta.annotation.PostConstructor;
-import org.springframework.stereotype.repository;
-import java.util.ArrayList;
 
-@repository
+import com.example.biblioteca.model.Libro;
+
+import jakarta.annotation.PostConstruct;
+
+import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Repository
 public class LibroRepository {
     private List<Libro> listaLibros = new ArrayList<>();
     
-    @PostConstructor
+    @PostConstruct
     public void init (){
         listaLibros.add(new Libro(1, "978-0134685991", "Effective Java", "Addison-Wesley", 2018, "Joshua Bloch"));
 
@@ -20,6 +25,68 @@ public class LibroRepository {
 
     }
 
+    public List<Libro> obtenerLibros(){
+        return listaLibros;
+    }
+
+    public Libro buscarLibroPorId(int id){
+
+        for(Libro libro : listaLibros){
+            if(libro.getId() == id) return libro;
+        }
+        return null;
+    }
+
+    //buscar libro por isbn
+
+    //buscar por autor
+
+    public Libro actualizar(Libro lib){
+
+        int id = 0;
+        int idPosicion = 0;
+
+        for(int i=0;i<listaLibros.size();i++){
+            if(listaLibros.get(i).getId() == lib.getId()){
+                id = lib.getId();
+                idPosicion = i;
+            }
+        }
+        
+        Libro libro1 = new Libro();
+        libro1.setId(id);
+        libro1.setTitulo(lib.getTitulo());
+        libro1.setAutor(lib.getAutor());
+        libro1.setFechaPublicacion(lib.getFechaPublicacion());
+        libro1.setEditorial(lib.getEditorial());
+        libro1.setIsbn(lib.getIsbn());
+
+        listaLibros.set(idPosicion,libro1);
+        return libro1;
+    }
+
+    public void eliminar(int id){
+
+        //Alternativa 1
+        Libro libro = buscarLibroPorId(id);
+        if(libro != null){
+            listaLibros.remove(libro);
+        }
+        
+        //ALternativa 2
+        int idPosicion = 0;
+        for(int i = 0;i<listaLibros.size();i++){
+            if(listaLibros.get(i).getId() == id){
+                idPosicion = i;
+                break;
+            }
+        }
+        if(idPosicion > 0){
+            listaLibros.remove(idPosicion);
+        }
+
+        listaLibros.removeIf((x) -> x.getId() == id);
+    }
 
 
 }
